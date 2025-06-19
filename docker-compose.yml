@@ -2,19 +2,12 @@ version: "3.8"
 
 services:
   api:
-    image: face-api:latest # We'll build this image and tag it
+    build: .
     ports:
-      - target: 8000
-        published: 8000
-        protocol: tcp
-        mode: host
+      - "8000:8000"
     volumes:
       - registered_faces:/app/registered_faces
       - chroma_data:/app/chroma_storage
-    deploy:
-      replicas: 1
-      restart_policy:
-        condition: on-failure
 
 volumes:
   registered_faces:
