@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - registered_faces:/app/registered_faces
+      - chroma_data:/app/chroma_storage
+
+volumes:
+  registered_faces:
+  chroma_data:
