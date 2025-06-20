@@ -1,21 +1,28 @@
 import chromadb  # type: ignore
 from chromadb.utils.embedding_functions import DefaultEmbeddingFunction  # type: ignore
+from chromadb import PersistentClient
 import numpy as np
+import os
 
-# Initialize ChromaDB client
-client = chromadb.Client()
+# Persistent directory (make sure it is mounted if using Docker)
+CHROMA_DIR = "/chroma_storage"
+os.makedirs(CHROMA_DIR, exist_ok=True)
+
+# Initialize persistent client
+client = PersistentClient(path=CHROMA_DIR)
 
 # Get or create the "faces" collection
 collection = client.get_or_create_collection(name="faces")
 
-# Find the best match using distance threshold
+# --- Function to find best match ---
 def find_best_match(query_embedding, threshold=0.6):
     result = collection.query(
         query_embeddings=[query_embedding],
-        n_results=1
+        n_results=1,
+        include=["distances", "metadatas"]
     )
 
-    if not result["ids"][0]:
+    if not result["ids"]:
         return "No match"
 
     distance = result["distances"][0][0]
@@ -23,16 +30,28 @@ def find_best_match(query_embedding, threshold=0.6):
 
     return name if distance < threshold else "No match"
 
-# Add a face embedding
+# --- Add a new face embedding ---
 def add_face(name, embedding):
     collection.add(
         ids=[name],
         embeddings=[embedding],
         metadatas=[{"name": name}]
     )
-    # client.persist()
+    # No need to call client.persist() in newer versions
 
-# Delete a face from the collection
+# --- Delete a face from the collection ---
 def delete_face(face_id: str):
     collection.delete(ids=[face_id])
-    # client.persist()
+
+# --- List all faces stored in Chroma ---
+def list_all_faces():
+    result = collection.get(include=["metadatas"])  # "ids" is included automatically
+
+    faces = []
+    for id_, metadata in zip(result["ids"], result["metadatas"]):
+        faces.append({
+            "id": id_,
+            "name": metadata.get("name", "Unknown")
+        })
+
+    return faces
