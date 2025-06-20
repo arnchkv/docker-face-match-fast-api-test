@@ -6,9 +6,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - registered_faces:/registered_faces
-      - chroma_data:/chroma_storage
+      - ./registered_faces:/registered_faces     # face images saved on host
+      - ./chroma_storage:/chroma_storage         # chroma DB saved on host
 
-volumes:
-  registered_faces:
-  chroma_data:
+volumes: {}
