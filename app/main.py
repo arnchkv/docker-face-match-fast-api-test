@@ -3,7 +3,7 @@ import os
 from app.face_utils import extract_face_embedding
 from app.chroma_utils import find_best_match, add_face
 import uuid
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 from fastapi import HTTPException
 from app.chroma_utils import delete_face
 
