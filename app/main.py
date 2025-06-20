@@ -50,7 +50,9 @@ async def match_face(file: UploadFile = File(...)):
         return {"match": "No face detected"}
 
     match = find_best_match(embedding)
-    return {"match": match}
+    # return {"match": match}
+    file_path = os.path.join(SAVE_DIR, match)
+    return FileResponse(file_path, media_type="image/jpeg")
 
 
 @app.post("/register/")
