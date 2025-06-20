@@ -8,5 +8,6 @@ services:
     volumes:
       - ./registered_faces:/registered_faces     # face images saved on host
       - ./chroma_storage:/chroma_storage         # chroma DB saved on host
+      - /home/cs38/Documents/deadbody_Picture:/input_images
 
 volumes: {}
