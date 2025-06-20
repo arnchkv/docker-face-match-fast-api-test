@@ -6,8 +6,8 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - registered_faces:/app/registered_faces
-      - chroma_data:/app/chroma_storage
+      - registered_faces:/registered_faces
+      - chroma_data:/chroma_storage
 
 volumes:
   registered_faces:
