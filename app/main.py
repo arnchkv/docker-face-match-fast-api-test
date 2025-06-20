@@ -6,6 +6,7 @@ import uuid
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi import HTTPException
 from app.chroma_utils import delete_face
+from app.chroma_utils import list_all_faces
 
 app = FastAPI()
 
@@ -76,3 +77,8 @@ async def register_face(name: str, file: UploadFile = File(...)):
         "filename": filename_only,
         "path": full_path
     }
+
+@app.get("/chroma-list/")
+async def chroma_list():
+    faces = list_all_faces()
+    return {"faces": faces}
