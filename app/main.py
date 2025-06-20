@@ -25,12 +25,20 @@ async def register_face(name: str, file: UploadFile = File(...)):
     if embedding is None:
         return {"error": "No face found"}
 
-    add_face(name, embedding)
+    # Generate unique filename
+    unique_id = str(uuid.uuid4())
+    filename_only = f"{name}_{unique_id}.jpg"
+    full_path = os.path.join(SAVE_DIR, filename_only)
 
-    # Save the image persistently
-    os.makedirs(SAVE_DIR, exist_ok=True)
-    filename = os.path.join(SAVE_DIR, f"{name}.jpg")
-    with open(filename, "wb") as f:
+    # Save image persistently
+    with open(full_path, "wb") as f:
         f.write(img)
 
-    return {"status": f"{name} registered and image saved"}
+    # Save to ChromaDB with filename as ID
+    add_face(filename_only, embedding)
+
+    return {
+        "status": "registered",
+        "filename": filename_only,
+        "path": full_path
+    }
