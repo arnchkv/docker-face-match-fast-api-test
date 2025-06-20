@@ -2,10 +2,44 @@ from fastapi import FastAPI, UploadFile, File  # type: ignore
 import os
 from app.face_utils import extract_face_embedding
 from app.chroma_utils import find_best_match, add_face
+import uuid
+from fastapi.responses import JSONResponse
+from fastapi import HTTPException
+from app.chroma_utils import delete_face
 
 app = FastAPI()
 
-SAVE_DIR = "/app/registered_faces"
+SAVE_DIR = "/registered_faces"
+
+@app.get("/list/")
+async def list_faces():
+    try:
+        files = os.listdir(SAVE_DIR)
+        images = [f for f in files if f.endswith(".jpg")]
+        return {"registered_faces": images}
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+@app.get("/view/{filename}")
+async def view_face(filename: str):
+    file_path = os.path.join(SAVE_DIR, filename)
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="Image not found")
+    return FileResponse(file_path, media_type="image/jpeg")
+
+@app.delete("/delete/{filename}")
+async def delete_face_image(filename: str):
+    file_path = os.path.join(SAVE_DIR, filename)
+    
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="Image not found")
+
+    try:
+        os.remove(file_path)
+        delete_face(filename)  # You must implement this in chroma_utils
+        return {"status": f"{filename} deleted"}
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
 
 @app.post("/match/")
 async def match_face(file: UploadFile = File(...)):
