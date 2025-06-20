@@ -14,7 +14,6 @@ client = PersistentClient(path=CHROMA_DIR)
 # Get or create the "faces" collection
 collection = client.get_or_create_collection(name="faces")
 
-# --- Function to find best match ---
 def find_best_match(query_embedding, threshold=0.6):
     result = collection.query(
         query_embeddings=[query_embedding],
@@ -22,11 +21,14 @@ def find_best_match(query_embedding, threshold=0.6):
         include=["distances", "metadatas"]
     )
 
-    if not result["ids"]:
+    # Check if we got any match at all
+    if not result["ids"] or not result["ids"][0]:
         return "No match"
 
+    # Extract the first (top) match info
     distance = result["distances"][0][0]
-    name = result["metadatas"][0][0].get("name", "Unknown")
+    metadata = result["metadatas"][0][0]
+    name = metadata.get("name", "Unknown")
 
     return name if distance < threshold else "No match"
 
