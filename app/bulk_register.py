@@ -29,10 +29,10 @@ def register_all_faces():
                     print(f"❌ No face detected in {filename}")
                     continue
 
-                face_id = f"{os.path.splitext(filename)[0]}_{uuid.uuid4().hex}.jpg"
+                face_id = f"{os.path.splitext(filename)[0]}_{str(uuid.uuid4())}.jpg"
                 add_face(face_id, embedding)
 
-                dest_path = os.path.join(SAVE_DIR, f"{face_id}.jpg")
+                dest_path = os.path.join(SAVE_DIR, face_id)
                 copyfile(src_path, dest_path)
 
                 print(f"✅ Registered and saved: {dest_path}")
