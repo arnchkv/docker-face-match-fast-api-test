@@ -14,7 +14,7 @@ client = PersistentClient(path=CHROMA_DIR)
 # Get or create the "faces" collection
 collection = client.get_or_create_collection(name="faces")
 
-def find_best_match(query_embedding, threshold=0.6):
+def find_best_match(query_embedding, threshold=0.3):
     result = collection.query(
         query_embeddings=[query_embedding],
         n_results=1,
